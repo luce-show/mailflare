@@ -7,14 +7,15 @@
   "routes": [
     {
       "pattern": "mail.luce.show",
-      "custom_domain": true
-    }
+      "custom_domain": true,
+    },
   ],
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "vars": {
     "APP_URL": "https://mail.luce.show",
     "VAPID_PUBLIC_KEY": "BGrJmsFwD5zeSfgM_osukoswPnMb9cKRV_OBBIpIDMmUVs-stnnbgcpU0TRz9XwvvGZ-jy005MzT5xx4UmO7XyA",
     "VAPID_SUBJECT": "mailto:dogan@luce.show",
+    "GITHUB_UPDATE_REPO": "luce-show/mailflare",
   },
   "assets": {
     "binding": "ASSETS",
