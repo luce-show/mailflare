@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { List, ListRow } from "@/components/ui/list";
 import { SectionRowSkeleton } from "@/components/page-skeletons";
 import { clearMailboxesCache } from "@/components/mailbox-provider-utils";
@@ -142,13 +142,16 @@ export default function MailboxesPage() {
 								<div className="space-y-2">
 									<Label htmlFor="mailbox-type">{t("mailboxes.type")}</Label>
 									<Select
-										id="mailbox-type"
 										value={mailboxType}
-										onChange={(event) => setMailboxType(event.target.value as "personal" | "shared")}
-										className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 text-sm shadow-sm shadow-neutral-200/50 focus-visible:border-blue-600 focus-visible:outline-none"
+										onValueChange={(val) => setMailboxType(val as "personal" | "shared")}
 									>
-										<option value="personal">{t("mailboxes.personalInbox")}</option>
-										<option value="shared">{t("mailboxes.sharedInbox")}</option>
+										<SelectTrigger id="mailbox-type" className="w-full">
+											<SelectValue />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="personal">{t("mailboxes.personalInbox")}</SelectItem>
+											<SelectItem value="shared">{t("mailboxes.sharedInbox")}</SelectItem>
+										</SelectContent>
 									</Select>
 								</div>
 							)}
@@ -156,20 +159,23 @@ export default function MailboxesPage() {
 							<div className="space-y-2">
 								<Label htmlFor="mailbox-owner">{t("mailboxes.account")}</Label>
 								<Select
-									id="mailbox-owner"
 									value={ownerUserId}
-									onChange={(event) => {
-										const owner = mailboxOwners.find((item) => item.id === event.target.value);
-										setOwnerUserId(event.target.value);
+									onValueChange={(val) => {
+										const owner = mailboxOwners.find((item) => item.id === val);
+										setOwnerUserId(val);
 										if (owner) setDisplayName(owner.name);
 									}}
-									className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 text-sm shadow-sm shadow-neutral-200/50 focus-visible:border-blue-600 focus-visible:outline-none"
 								>
-									{mailboxOwners.map((owner) => (
-										<option key={owner.id} value={owner.id}>
-											{owner.name} ({owner.email})
-										</option>
-									))}
+									<SelectTrigger id="mailbox-owner" className="w-full">
+										<SelectValue placeholder={t("mailboxes.account")} />
+									</SelectTrigger>
+									<SelectContent>
+										{mailboxOwners.map((owner) => (
+											<SelectItem key={owner.id} value={owner.id}>
+												{owner.name} ({owner.email})
+											</SelectItem>
+										))}
+									</SelectContent>
 								</Select>
 							</div>
 							) : (
@@ -198,17 +204,22 @@ export default function MailboxesPage() {
 									/>
 									<span className="flex items-center text-sm text-neutral-400">@</span>
 									<Select
-										aria-label={t("accounts.domain")}
-										className="min-w-0 max-w-[55%] bg-transparent px-3 text-sm text-neutral-700 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-										value={domainId}
-										onChange={(event) => setDomainId(event.target.value)}
+										value={domainId || undefined}
+										onValueChange={setDomainId}
 									>
-										<option value="">{t("accounts.selectDomain")}</option>
-										{(domains.data?.domains ?? []).map((domain) => (
-											<option key={domain.id} value={domain.id}>
-												{domain.hostname}
-											</option>
-										))}
+										<SelectTrigger
+											aria-label={t("accounts.domain")}
+											className="h-full min-w-0 max-w-[55%] rounded-none border-0 bg-transparent px-3 text-sm text-neutral-700 shadow-none focus:ring-0 focus:border-0"
+										>
+											<SelectValue placeholder={t("accounts.selectDomain")} />
+										</SelectTrigger>
+										<SelectContent>
+											{(domains.data?.domains ?? []).map((domain) => (
+												<SelectItem key={domain.id} value={domain.id}>
+													{domain.hostname}
+												</SelectItem>
+											))}
+										</SelectContent>
 									</Select>
 								</div>
 							</div>

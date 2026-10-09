@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   createMailboxAlias,
@@ -52,6 +52,7 @@ export default function MailboxSettingsPage() {
 
   useEffect(() => {
     if (mailbox.data) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDisplayName(mailbox.data.displayName ?? "");
       setUseAllDomains(mailbox.data.useAllDomains);
       setAliasDomainId((current) => current || mailbox.data.domainId);
@@ -259,16 +260,20 @@ export default function MailboxSettingsPage() {
               disabled={addAlias.isPending}
             />
             <Select
-              value={aliasDomainId}
-              onChange={(event) => setAliasDomainId(event.target.value)}
-              className="h-10 min-w-0 flex-1 text-sm"
+              value={aliasDomainId || undefined}
+              onValueChange={setAliasDomainId}
               disabled={addAlias.isPending}
             >
-              {(aliases.data?.availableDomains ?? []).map((domain) => (
-                <option key={domain.id} value={domain.id}>
-                  @{domain.hostname}
-                </option>
-              ))}
+              <SelectTrigger className="h-10 min-w-0 flex-1 text-sm bg-white">
+                <SelectValue placeholder="@domain" />
+              </SelectTrigger>
+              <SelectContent>
+                {(aliases.data?.availableDomains ?? []).map((domain) => (
+                  <SelectItem key={domain.id} value={domain.id}>
+                    @{domain.hostname}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
             <Button
               type="button"
@@ -341,21 +346,24 @@ export default function MailboxSettingsPage() {
             )}
             <div className="flex gap-2">
               <Select
-                value={selectedUserId}
-                onChange={(event) => setSelectedUserId(event.target.value)}
-                className="h-10 min-w-0 flex-1 text-sm"
+                value={selectedUserId || undefined}
+                onValueChange={setSelectedUserId}
               >
-                <option value="">{t("mailbox.chooseAccount")}</option>
-                {(sharedAccess.data?.availableUsers ?? [])
-                  .filter(
-                    (account) =>
-                      !sharedAccess.data?.members.some((member) => member.userId === account.id),
-                  )
-                  .map((account) => (
-                    <option key={account.id} value={account.id}>
-                      {account.name} ({account.email})
-                    </option>
-                  ))}
+                <SelectTrigger className="h-10 min-w-0 flex-1 text-sm bg-white">
+                  <SelectValue placeholder={t("mailbox.chooseAccount")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {(sharedAccess.data?.availableUsers ?? [])
+                    .filter(
+                      (account) =>
+                        !sharedAccess.data?.members.some((member) => member.userId === account.id),
+                    )
+                    .map((account) => (
+                      <SelectItem key={account.id} value={account.id}>
+                        {account.name} ({account.email})
+                      </SelectItem>
+                    ))}
+                </SelectContent>
               </Select>
               <Button
                 type="button"

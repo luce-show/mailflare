@@ -28,7 +28,7 @@ import {
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SkeletonRows } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { BACKUP_TABLE_GROUPS } from "@/lib/backups/table-groups";
@@ -262,13 +262,10 @@ export default function BackupsPage() {
                     <div className="flex items-center justify-between gap-4">
                       <Label htmlFor="schedule-type" className="flex-1">{t("backups.frequency")}</Label>
                       <Select
-                        id="schedule-type"
                         value={settings.scheduleType}
-                        containerClassName="w-1/2 max-w-52 shrink-0 text-sm"
                         disabled={autoSaveSettings.isPending}
-                        onChange={(event) => {
-                          const scheduleType = event.target
-                            .value as BackupSettings["scheduleType"];
+                        onValueChange={(val) => {
+                          const scheduleType = val as BackupSettings["scheduleType"];
                           autoSaveSettings.mutate({
                             ...settings,
                             scheduleType,
@@ -280,11 +277,15 @@ export default function BackupsPage() {
                                   : null,
                           });
                         }}
-                        className="px-3 py-2"
                       >
-                        <option value="daily">{t("backups.daily")}</option>
-                        <option value="weekly">{t("backups.weekly")}</option>
-                        <option value="monthly">{t("backups.monthly")}</option>
+                        <SelectTrigger id="schedule-type" className="w-1/2 max-w-52 shrink-0 bg-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="daily">{t("backups.daily")}</SelectItem>
+                          <SelectItem value="weekly">{t("backups.weekly")}</SelectItem>
+                          <SelectItem value="monthly">{t("backups.monthly")}</SelectItem>
+                        </SelectContent>
                       </Select>
                     </div>
 
@@ -292,24 +293,25 @@ export default function BackupsPage() {
                       <div className="flex items-center justify-between gap-4">
                         <Label htmlFor="weekday">{t("backups.dayOfWeek")}</Label>
                         <Select
-                          id="weekday"
-                          value={settings.scheduleValue ?? 1}
-                          containerClassName="w-1/2 max-w-52 shrink-0"
+                          value={String(settings.scheduleValue ?? 1)}
                           disabled={autoSaveSettings.isPending}
-                          onChange={(event) =>
+                          onValueChange={(val) =>
                             autoSaveSettings.mutate({
                               ...settings,
-                              scheduleValue: Number(event.target.value),
+                              scheduleValue: Number(val),
                             })
                           }
-                          
-                        className="px-3 py-2 text-sm"
                         >
-                          {WEEKDAYS.map((day) => (
-                            <option key={day.value} value={day.value}>
-                              {t(day.labelKey)}
-                            </option>
-                          ))}
+                          <SelectTrigger id="weekday" className="w-1/2 max-w-52 shrink-0 bg-white">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {WEEKDAYS.map((day) => (
+                              <SelectItem key={day.value} value={String(day.value)}>
+                                {t(day.labelKey)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
                         </Select>
                       </div>
                     )}

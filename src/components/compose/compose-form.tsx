@@ -8,7 +8,7 @@ import { useLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useSelectedMailbox } from "@/components/mailbox-provider";
 import { authFetch } from "@/lib/auth/client";
@@ -550,19 +550,20 @@ export function ComposeForm({
 				<div className="border-b border-neutral-100 px-4 py-1 flex flex-row items-center">
 					<Label htmlFor={`${mode}-from`} className="text-sm text-neutral-500">{t("compose.from")}</Label>
 					<Select
-						id={`${mode}-from`}
-						value={selectedMailbox && selectedFrom ? `${selectedMailbox.id}|${selectedFrom}` : ""}
-						onChange={(event) => selectSender(event.target.value)}
-						// placeholder="Select a mailbox first"
-						required
+						value={selectedMailbox && selectedFrom ? `${selectedMailbox.id}|${selectedFrom}` : undefined}
+						onValueChange={selectSender}
 						disabled={loadingDraft || senderOptions.length === 0}
-						className="h-8 px-0 py-1 text-sm shadow-none focus-visible:ring-0"
-						containerClassName="border-0 flex-1"
 					>
-						{senderOptions.length === 0 && <option value="">{t("compose.selectMailboxFirst")}</option>}
-						{senderOptions.map(({ mailbox, address }) => (
-							<option key={`${mailbox.id}|${address}`} value={`${mailbox.id}|${address}`}>{address}</option>
-						))}
+						<SelectTrigger id={`${mode}-from`} className="h-8 border-0 bg-transparent px-2 py-1 text-sm shadow-none focus:ring-0 flex-1">
+							<SelectValue placeholder={t("compose.selectMailboxFirst")} />
+						</SelectTrigger>
+						<SelectContent>
+							{senderOptions.map(({ mailbox, address }) => (
+								<SelectItem key={`${mailbox.id}|${address}`} value={`${mailbox.id}|${address}`}>
+									{address}
+								</SelectItem>
+							))}
+						</SelectContent>
 					</Select>
 				</div>
 				<RecipientInput

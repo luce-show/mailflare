@@ -5,7 +5,7 @@ import { useLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { AccountAliasesProps } from "./types";
 
 export function AccountAliases({ domains, domainId, username, useAllDomains, onUseAllDomainsChange, aliases, onAliasesChange }: AccountAliasesProps) {
@@ -42,14 +42,22 @@ export function AccountAliases({ domains, domainId, username, useAllDomains, onU
 							/>
 							<span className="text-sm text-neutral-400">@</span>
 							<Select
-								aria-label={t("aliases.domainLabel", { n: index + 1 })}
-								value={alias.domainId}
-								onChange={(event) => onAliasesChange(aliases.map((item) => item.id === alias.id ? { ...item, domainId: event.target.value } : item))}
-								containerClassName="min-w-0 flex-1 self-stretch rounded-none border-0 px-0"
-								className="min-w-0 bg-transparent px-2 text-sm"
-								required
+								value={alias.domainId || undefined}
+								onValueChange={(val) => onAliasesChange(aliases.map((item) => item.id === alias.id ? { ...item, domainId: val } : item))}
 							>
-								{availableDomains.map((domain) => <option key={domain.id} value={domain.id}>{domain.hostname}</option>)}
+								<SelectTrigger
+									aria-label={t("aliases.domainLabel", { n: index + 1 })}
+									className="h-full min-w-0 flex-1 self-stretch rounded-none border-0 bg-transparent px-2 text-sm shadow-none focus:ring-0 focus:border-0"
+								>
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									{availableDomains.map((domain) => (
+										<SelectItem key={domain.id} value={domain.id}>
+											{domain.hostname}
+										</SelectItem>
+									))}
+								</SelectContent>
 							</Select>
 						</div>
 						<Button type="button" variant="ghost" size="sm" className="h-10 w-10 shrink-0 p-0" aria-label={t("aliases.remove", { n: index + 1 })} onClick={() => onAliasesChange(aliases.filter((item) => item.id !== alias.id))}>

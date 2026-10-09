@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { importMessageFiles } from "@/components/settings/import-messages-utils";
 import type {
   ImapFormState,
@@ -246,16 +246,18 @@ export default function SettingsImportPage() {
             <div className="flex flex-col gap-2">
               <Label htmlFor="import-source">{t("importPage.source")}</Label>
               <Select
-                id="import-source"
                 value={activeTab}
-                onChange={(event) =>
-                  setActiveTab(event.target.value as ImportTab)
+                onValueChange={(val) =>
+                  setActiveTab(val as ImportTab)
                 }
-                className="text-sm w-full py-2"
-                // className="h-10 w-full rounded-md border border-neutral-200 bg-white px-3 text-sm text-neutral-900 shadow-sm shadow-neutral-200/50 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               >
-                <option value="file">{t("importPage.backupFile")}</option>
-                <option value="imap">{t("importPage.imap")}</option>
+                <SelectTrigger id="import-source" className="w-full bg-white text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="file">{t("importPage.backupFile")}</SelectItem>
+                  <SelectItem value="imap">{t("importPage.imap")}</SelectItem>
+                </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">

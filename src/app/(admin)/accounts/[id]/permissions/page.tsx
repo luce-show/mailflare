@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Select } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { ProgressiveAvatarImage } from "@/components/progressive-avatar-image";
 import { getAvatarColorStyle } from "@/lib/avatar-colors";
@@ -97,15 +97,17 @@ export default function AccountPermissionsPage() {
 			<section className="space-y-3 rounded-3xl bg-white p-6">
 				<label htmlFor="account-role" className="block text-sm font-semibold text-neutral-900">{t("accounts.role")}</label>
 				<Select
-					id="account-role"
 					value={account?.role ?? "user"}
 					disabled={!account || saving || !account.canChangeRole}
-					containerClassName="w-full sm:w-64"
-					className="h-10 text-sm"
-					onChange={(event) => account && setAccount({ ...account, role: event.target.value === "admin" ? "admin" : "user" })}
+					onValueChange={(val) => account && setAccount({ ...account, role: val === "admin" ? "admin" : "user" })}
 				>
-					<option value="user">{t("accounts.roleUser")}</option>
-					<option value="admin">{t("accounts.roleAdmin")}</option>
+					<SelectTrigger id="account-role" className="w-full sm:w-64 bg-white">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="user">{t("accounts.roleUser")}</SelectItem>
+						<SelectItem value="admin">{t("accounts.roleAdmin")}</SelectItem>
+					</SelectContent>
 				</Select>
 				<p className="text-xs text-neutral-500">
 					{account?.canChangeRole
@@ -180,16 +182,19 @@ export default function AccountPermissionsPage() {
 					</div>
 					<div className="flex flex-col gap-3 sm:flex-row">
 						<Select
-							aria-label={t("account.permissions.selectNext")}
-							value={transferTargetId}
-							containerClassName="w-full sm:max-w-sm"
-							className="h-10 text-sm"
-							onChange={(event) => setTransferTargetId(event.target.value)}
+							value={transferTargetId || undefined}
+							onValueChange={setTransferTargetId}
 						>
-							<option value="">{t("account.permissions.selectAccount")}</option>
-							{candidates.map((candidate) => (
-								<option key={candidate.id} value={candidate.id}>{candidate.email} — {candidate.name}</option>
-							))}
+							<SelectTrigger aria-label={t("account.permissions.selectNext")} className="w-full sm:max-w-sm bg-white">
+								<SelectValue placeholder={t("account.permissions.selectAccount")} />
+							</SelectTrigger>
+							<SelectContent>
+								{candidates.map((candidate) => (
+									<SelectItem key={candidate.id} value={candidate.id}>
+										{candidate.email} — {candidate.name}
+									</SelectItem>
+								))}
+							</SelectContent>
 						</Select>
 						<Button variant="outline" disabled={!transferTarget} onClick={() => setTransferOpen(true)}>
 							{t("account.permissions.transferTitle")}

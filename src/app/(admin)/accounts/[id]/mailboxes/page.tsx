@@ -6,7 +6,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { useLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import type { ManagedAccount, ManagedDomain, ManagedMailbox } from "../types";
 import {
@@ -139,20 +139,20 @@ export default function AccountMailboxesPage() {
               <div className="min-w-0 space-y-2">
                 <Label htmlFor="inbox-domain">{t("account.mailboxes.domain")}</Label>
                 <Select
-                  id="inbox-domain"
-                  value={domainId}
-                  onChange={(event) => setDomainId(event.target.value)}
-                  containerClassName="h-10 w-full min-w-0 bg-white"
-                  className="min-w-0 text-sm"
+                  value={domainId || undefined}
+                  onValueChange={setDomainId}
                   disabled={!account || domains.length === 0 || saving}
-                  required
                 >
-                  {domains.length === 0 && <option value="">{t("account.mailboxes.noDomains")}</option>}
-                  {domains.map((domain) => (
-                    <option key={domain.id} value={domain.id}>
-                      {domain.hostname}
-                    </option>
-                  ))}
+                  <SelectTrigger id="inbox-domain" className="h-10 w-full min-w-0 bg-white text-sm">
+                    <SelectValue placeholder={domains.length === 0 ? t("account.mailboxes.noDomains") : t("accounts.selectDomain")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {domains.map((domain) => (
+                      <SelectItem key={domain.id} value={domain.id}>
+                        {domain.hostname}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
             </div>

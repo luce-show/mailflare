@@ -3,7 +3,13 @@
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/components/language-provider";
 import type { TranslationKey } from "@/lib/i18n/types";
-import { Select } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import {
 	isThemePreference,
 	readThemePreference,
@@ -20,17 +26,19 @@ const OPTIONS: { value: ThemePreference; labelKey: TranslationKey }[] = [
 
 export function AppearanceSettings() {
 	const { t } = useLanguage();
-	const [preference, setPreference] = useState<ThemePreference>("system");
+	const [preference, setPreference] = useState<ThemePreference>(() => {
+		if (typeof window === "undefined") return "system";
+		return readThemePreference();
+	});
 
 	useEffect(() => {
-		setPreference(readThemePreference());
 		const sync = () => setPreference(readThemePreference());
 		window.addEventListener(THEME_CHANGED_EVENT, sync);
 		return () => window.removeEventListener(THEME_CHANGED_EVENT, sync);
 	}, []);
 
 	return (
-		<label className="flex items-start gap-3 rounded-xl bg-neutral-50 p-4">
+		<div className="flex items-center gap-3 rounded-xl bg-neutral-50 p-4">
 			<span className="flex-1">
 				<span className="block text-sm font-medium text-neutral-900">{t("settings.theme.label")}</span>
 				<span className="mt-1 block text-sm text-neutral-500">
@@ -39,21 +47,23 @@ export function AppearanceSettings() {
 			</span>
 			<Select
 				value={preference}
-				aria-label={t("settings.theme.label")}
-				className="py-1.5 text-sm text-neutral-900"
-				onChange={(event) => {
-					const next = event.target.value;
+				onValueChange={(next) => {
 					if (!isThemePreference(next)) return;
 					setPreference(next);
 					saveThemePreference(next);
 				}}
 			>
-				{OPTIONS.map((option) => (
-					<option key={option.value} value={option.value}>
-						{t(option.labelKey)}
-					</option>
-				))}
+				<SelectTrigger aria-label={t("settings.theme.label")} className="w-36 bg-white">
+					<SelectValue />
+				</SelectTrigger>
+				<SelectContent>
+					{OPTIONS.map((option) => (
+						<SelectItem key={option.value} value={option.value}>
+							{t(option.labelKey)}
+						</SelectItem>
+					))}
+				</SelectContent>
 			</Select>
-		</label>
+		</div>
 	);
 }
